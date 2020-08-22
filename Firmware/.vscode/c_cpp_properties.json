@@ -5,7 +5,8 @@
             "includePath": [
                 "/Users/vasilii/Documents/Arduino/hardware/WAV8F/AVR/**",
                 "${workspaceFolder}/**",
-                "/Applications/Arduino.app/Contents/Java/libraries/**"
+                "/Applications/Arduino.app/Contents/Java/libraries/**",
+                "/Applications/Arduino.app/Contents/Java/**"
             ],
             "defines": [],
             "macFrameworkPath": [
