@@ -1,0 +1,5 @@
+{
+    "board": "WAV8F:AVR:lardu_328e",
+    "sketch": "Firmware.ino",
+    "port": "/dev/tty.usbserial-1430"
+}
