@@ -19,7 +19,10 @@ void setup()
 
     for (int i = 0; i < SERVO_COUNT; i++)
     {
-        myservo[i].write(90, 100);
+        int degree = i == 1 ? 27 : i == 2 ? 136 : i == 3 ? 122 : 90;
+        myservo[i].write(
+            degree,
+            100);
     };
 
     Serial.setTimeout(3000);
