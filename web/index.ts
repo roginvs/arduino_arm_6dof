@@ -110,10 +110,17 @@ function log(msg: string) {
     el.appendChild(div);
   }
 }
+function setHtml(id: "cmd" | "result", text: string) {
+  const el = document.getElementById(id);
+  if (!el) {
+    console.warn(`No element ${id}`);
+    return;
+  }
+  el.innerHTML = text;
+}
 
 async function start() {
-  // 0x1a86 0x7523
-  const filters: USBDeviceFilter[] = [{ vendorId: 6790, productId: 29987 }];
+  const filters: USBDeviceFilter[] = [{ vendorId: 0x1a86, productId: 0x7523 }];
   const device = await navigator.usb.requestDevice({ filters: filters });
 
   (window as any).device = device;
@@ -121,11 +128,24 @@ async function start() {
 
   const serial = new Serial(device);
 
-  serial.onReceive = (data) => {
-    const textDecoder = new TextDecoder();
-    const msg = textDecoder.decode(data);
-    log(msg);
-  };
+  function sendCmd(cmd: string) {
+    return new Promise((resolve, reject) => {
+      setHtml("cmd", cmd);
+      serial.sendStr(cmd).catch((e) => {
+        setHtml("result", "SEND ERROR");
+        reject(e);
+      });
+
+      serial.onReceive = (data) => {
+        const textDecoder = new TextDecoder("utf-8");
+        const msg = textDecoder.decode(data);
+        if (msg.indexOf("OK") > -1) {
+          resolve();
+        }
+        setHtml("result", msg);
+      };
+    });
+  }
 
   await serial.connect();
 
@@ -135,6 +155,8 @@ async function start() {
     input: document.getElementById(`servo_${i}_input`) as HTMLInputElement,
     span: document.getElementById(`servo_${i}_span`) as HTMLSpanElement,
   }));
+
+  let lastcmd: string = "";
   function onChange() {
     const speed = parseInt(speedInput.value);
 
@@ -172,12 +194,37 @@ async function start() {
         .join("") +
       "\n";
 
-    log(cmd);
-    serial.sendStr(cmd).catch((e) => log(`Sending error: ${e.message}`));
+    lastcmd = cmd;
+    sendCmd(cmd);
   }
   speedInput.onchange = onChange;
   servosDom.forEach((s) => (s.input.onchange = onChange));
   onChange();
+
+  document.getElementById("save")!.onclick = () => {
+    const area = document.getElementById("bulk_cmds") as HTMLTextAreaElement;
+    if (lastcmd) {
+      area.value = area.value + lastcmd;
+    }
+  };
+
+  const runButton = document.getElementById("run") as HTMLButtonElement;
+  runButton.onclick = async () => {
+    runButton.disabled = true;
+    const area = document.getElementById("bulk_cmds") as HTMLTextAreaElement;
+    const lines = area.value.split("\n");
+    for (const line of lines
+      .map((x) => x.trim())
+      .map((line, idx) => ({ line, idx }))) {
+      if (line.line) {
+        runButton.innerHTML = `Running ${line.idx}/${lines.length}`;
+        await sendCmd(line.line);
+      }
+    }
+    setHtml("cmd", "done");
+    runButton.disabled = false;
+    runButton.innerHTML = "Run";
+  };
 }
 
 document.getElementById("start")!.onclick = () => start();

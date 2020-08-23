@@ -11,96 +11,130 @@
 
       #controls {
         /*   max-width: 300px; */
+        font-family: monospace;
+      }
+      #controls label {
+        display: block;
+      }
+
+      #container {
+        display: flex;
+      }
+
+      #bulk {
+        width: 100%;
+      }
+      #bulk_cmds {
+        width: 100%;
+        height: 400px;
       }
     </style>
 
     <button id="start">Start</button>
 
-    <div id="controls">
-      <div>
-        <label>Speed <span id="speed_span"></span></label>
-        <input
-          class="range"
-          id="speed_input"
-          type="range"
-          min="0"
-          max="255"
-          value="100"
-        />
+    <div id="container">
+      <div id="controls">
+        <div>
+          <label>Speed <span id="speed_span"></span></label>
+          <input
+            class="range"
+            id="speed_input"
+            type="range"
+            min="0"
+            max="255"
+            value="100"
+          />
+        </div>
+
+        <div>
+          <label>Servo 1 Rotate <span id="servo_1_span"></span></label>
+          <input
+            class="range"
+            id="servo_1_input"
+            type="range"
+            min="0"
+            max="180"
+            value="90"
+          />
+        </div>
+
+        <div>
+          <label>Servo 2 <span id="servo_2_span"></span></label>
+          <input
+            class="range"
+            id="servo_2_input"
+            type="range"
+            min="0"
+            max="180"
+            value="27"
+          />
+        </div>
+
+        <div>
+          <label>Servo 3 <span id="servo_3_span"></span></label>
+          <input
+            class="range"
+            id="servo_3_input"
+            type="range"
+            min="0"
+            max="180"
+            value="136"
+          />
+        </div>
+
+        <div>
+          <label>Servo 4 <span id="servo_4_span"></span></label>
+          <input
+            class="range"
+            id="servo_4_input"
+            type="range"
+            min="0"
+            max="180"
+            value="122"
+          />
+        </div>
+
+        <div>
+          <label>Servo 5 claw rotate <span id="servo_5_span"></span></label>
+          <input
+            class="range"
+            id="servo_5_input"
+            type="range"
+            min="0"
+            max="180"
+            value="90"
+          />
+        </div>
+
+        <div>
+          <label>Servo 6 claw <span id="servo_6_span"></span></label>
+          <input
+            class="range"
+            id="servo_6_input"
+            type="range"
+            min="0"
+            max="180"
+            value="90"
+          />
+        </div>
+
+        <div>
+          <span id="cmd"></span>
+          <span id="result"></span>
+        </div>
       </div>
 
-      <div>
-        <label>Servo 1 <span id="servo_1_span"></span></label>
-        <input
-          class="range"
-          id="servo_1_input"
-          type="range"
-          min="0"
-          max="180"
-          value="90"
-        />
-      </div>
-
-      <div>
-        <label>Servo 2 <span id="servo_2_span"></span></label>
-        <input
-          class="range"
-          id="servo_2_input"
-          type="range"
-          min="0"
-          max="180"
-          value="90"
-        />
-      </div>
-
-      <div>
-        <label>Servo 3 <span id="servo_3_span"></span></label>
-        <input
-          class="range"
-          id="servo_3_input"
-          type="range"
-          min="0"
-          max="180"
-          value="90"
-        />
-      </div>
-
-      <div>
-        <label>Servo 4 <span id="servo_4_span"></span></label>
-        <input
-          class="range"
-          id="servo_4_input"
-          type="range"
-          min="0"
-          max="180"
-          value="90"
-        />
-      </div>
-
-      <div>
-        <label>Servo 5 <span id="servo_5_span"></span></label>
-        <input
-          class="range"
-          id="servo_5_input"
-          type="range"
-          min="0"
-          max="180"
-          value="90"
-        />
-      </div>
-
-      <div>
-        <label>Servo 6 <span id="servo_6_span"></span></label>
-        <input
-          class="range"
-          id="servo_6_input"
-          type="range"
-          min="0"
-          max="180"
-          value="90"
-        />
+      <div id="bulk">
+        <div>
+          <button id="save">Save pos</button>
+          <button id="run">Run</button>
+        </div>
+        <div>
+          <textarea id="bulk_cmds"></textarea>
+        </div>
       </div>
     </div>
+
     <div id="logs"></div>
     <script defer src="./index.ts"></script>
   </body>
