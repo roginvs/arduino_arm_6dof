@@ -90,11 +90,15 @@ class Serial {
   public onReceiveError: (e: any) => void = (e) => console.warn(e);
   public send(data: BufferSource) {
     if (!this.device.configuration) {
-      return;
+      throw new Error("No configuration applied");
     }
     const endpointNumber = this.device.configuration.interfaces[0].alternate
       .endpoints[1].endpointNumber;
     return this.device.transferOut(endpointNumber, data);
+  }
+  public sendStr(s: string) {
+    const view = new TextEncoder().encode(s);
+    return this.send(view);
   }
 }
 
@@ -125,14 +129,55 @@ async function start() {
 
   await serial.connect();
 
-  console.info("kek2");
-  setInterval(() => {
-    const view = new TextEncoder("utf-8").encode("lalala\n");
-    serial
-      .send(view)
-      ?.then((m) => console.info("ok", m))
-      .catch((e) => console.warn("fail", e));
-  }, 1000);
+  const speedInput = document.getElementById("speed_input") as HTMLInputElement;
+  const servosDom = [1, 2, 3, 4, 5, 6].map((i) => ({
+    i: i,
+    input: document.getElementById(`servo_${i}_input`) as HTMLInputElement,
+    span: document.getElementById(`servo_${i}_span`) as HTMLSpanElement,
+  }));
+  function onChange() {
+    const speed = parseInt(speedInput.value);
+
+    document.getElementById("speed_span")!.innerHTML = `${speed}`;
+
+    const servoValues: number[] = [];
+    servosDom.forEach((s) => {
+      const value = parseInt(s.input.value);
+      s.span.innerHTML = `${value}`;
+      servoValues.push(value);
+    });
+
+    function toHex(n: number) {
+      const s = n.toString(16).toUpperCase();
+      return s.length === 1 ? `0${s}` : s;
+    }
+
+    const cmd =
+      "M" +
+      [
+        servoValues[0],
+        speed,
+        servoValues[1],
+        speed,
+        servoValues[2],
+        speed,
+        servoValues[3],
+        speed,
+        servoValues[4],
+        speed,
+        servoValues[5],
+        speed,
+      ]
+        .map((v) => toHex(v))
+        .join("") +
+      "\n";
+
+    log(cmd);
+    serial.sendStr(cmd).catch((e) => log(`Sending error: ${e.message}`));
+  }
+  speedInput.onchange = onChange;
+  servosDom.forEach((s) => (s.input.onchange = onChange));
+  onChange();
 }
 
 document.getElementById("start")!.onclick = () => start();
