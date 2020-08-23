@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/w3c-web-usb": "^1.0.4",
     "parcel-bundler": "^1.12.4",
     "typescript": "^4.0.2"
   }
